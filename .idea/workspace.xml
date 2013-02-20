@@ -20,10 +20,19 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="test_git.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="test_git.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test_git.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="52" column="100" selection-start="1029" selection-end="1029" vertical-scroll-proportion="0.2939068">
+            <state line="28" column="20" selection-start="453" selection-end="453" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="file.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/file.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -40,6 +49,7 @@
     <option name="changedFiles">
       <list>
         <option value="$PROJECT_DIR$/test_git.py" />
+        <option value="$PROJECT_DIR$/file.py" />
       </list>
     </option>
   </component>
@@ -249,7 +259,14 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/test_git.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="100" selection-start="1029" selection-end="1029" vertical-scroll-proportion="0.2939068">
+        <state line="28" column="20" selection-start="453" selection-end="453" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/file.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>

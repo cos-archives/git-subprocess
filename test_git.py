@@ -26,7 +26,7 @@ def commit(path, fullname, email, message):
         pass
 
     subprocess.Popen(
-    ["git", "commit", fullname, email, "-m", message],
+    ["git", "commit", "-m", message],
     cwd = path,
     stdout = subprocess.PIPE,
     stderr = subprocess.PIPE,
@@ -48,7 +48,9 @@ def add(path, file):
     shell = False
     ).communicate()
 
-init("/Users/samportnow/Documents/Git")
+#https://help.github.com/articles/remove-sensitive-data
+
+#init("/Users/samportnow/Documents/Git")
 add("/Users/samportnow/Documents/Git",".")
 commit("/Users/samportnow/Documents/Git", "Sam Portnow", "samson91787@gmail.com", "Made some changes")
 # def commit
