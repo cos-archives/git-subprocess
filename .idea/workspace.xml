@@ -32,7 +32,7 @@
       <file leaf-file-name="test_git.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/gitsubprocess/test_git.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="120" column="40" selection-start="2489" selection-end="2489" vertical-scroll-proportion="0.7972973">
+            <state line="121" column="27" selection-start="2517" selection-end="2517" vertical-scroll-proportion="0.847973">
               <folding />
             </state>
           </provider>
@@ -317,7 +317,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/gitsubprocess/test_git.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="120" column="40" selection-start="2489" selection-end="2489" vertical-scroll-proportion="0.7972973">
+        <state line="121" column="27" selection-start="2517" selection-end="2517" vertical-scroll-proportion="0.847973">
           <folding />
         </state>
       </provider>
