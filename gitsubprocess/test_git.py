@@ -204,7 +204,7 @@ def get_and_copy(path, filename, new_path):
             stderr = subprocess.PIPE,
             shell = False
         ).communicate()
-        if moved.startswith('fatal:'):
+        if moved[1].startswith('fatal:'):
             raise 'Must be a git repo'
 
 
