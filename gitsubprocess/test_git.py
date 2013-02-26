@@ -204,7 +204,7 @@ def get_and_copy(path, filename, new_path):
             stderr = subprocess.PIPE,
             shell = False
         ).communicate()
-        if not moved:
+        if 'fatal:' == moved[1][0:6]:
             return 'Must be a git respository'
 
 
