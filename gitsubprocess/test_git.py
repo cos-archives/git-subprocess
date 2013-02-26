@@ -7,14 +7,14 @@ import json
 # add and commit function
 
 def is_git_repo(path):
-    if 'fatal:' == subprocess.Popen(
+    if subprocess.Popen(
             ["git", "status"],
             cwd = path,
             stdout = subprocess.PIPE,
             stderr = subprocess.PIPE,
             shell = False
-        ).communicate()[1][0:6]:
-        return 'Not a git dir'
+        ).communicate()[1].startswith('fatal'):
+        return False
     else:
         return True
 
@@ -204,8 +204,8 @@ def get_and_copy(path, filename, new_path):
             stderr = subprocess.PIPE,
             shell = False
         ).communicate()
-        if 'fatal:' == moved[1][0:6]:
-            return 'Must be a git respository'
+        if moved.startswith('fatal:'):
+            raise 'Must be a git repo'
 
 
 
