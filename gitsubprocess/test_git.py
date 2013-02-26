@@ -205,7 +205,7 @@ def get_and_copy(path, filename, new_path):
             shell = False
         ).communicate()
         if moved[1].startswith('fatal:'):
-            raise 'Must be a git repo'
+            raise NameError('Must be a git repo')
 
 
 
