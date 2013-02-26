@@ -29,13 +29,22 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test_git.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="test_git.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/gitsubprocess/test_git.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="207" column="49" selection-start="5031" selection-end="5031" vertical-scroll-proportion="0.7466216">
+            <state line="207" column="49" selection-start="5031" selection-end="5031" vertical-scroll-proportion="0.0">
               <folding>
                 <element signature="e#27#48#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="exceptions.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/gitsubprocess/exceptions.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="4" column="4" selection-start="60" selection-end="60" vertical-scroll-proportion="0.19417475">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -71,6 +80,7 @@
         <option value="$PROJECT_DIR$/file.py" />
         <option value="$PROJECT_DIR$/test_git.py" />
         <option value="$PROJECT_DIR$/gitsubprocess/test_git.py" />
+        <option value="$PROJECT_DIR$/gitsubprocess/exceptions.py" />
       </list>
     </option>
   </component>
@@ -383,10 +393,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/gitsubprocess/test_git.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="207" column="49" selection-start="5031" selection-end="5031" vertical-scroll-proportion="0.7466216">
+        <state line="207" column="49" selection-start="5031" selection-end="5031" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="e#27#48#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gitsubprocess/exceptions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="4" selection-start="60" selection-end="60" vertical-scroll-proportion="0.19417475">
+          <folding />
         </state>
       </provider>
     </entry>
