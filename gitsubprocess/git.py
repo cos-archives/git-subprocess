@@ -7,248 +7,238 @@ import subprocess
 # add and commit function
 
 
-def is_git_repo(path):
-    if subprocess.Popen(
-        ["git", "status"],
-        cwd=path,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=False
-    ).communicate()[1].startswith('fatal'):
-        return False
-    else:
-        return True
+class Repository(object):
+    '''Represents a git repository.'''
 
+    def is_git_repo(self, path):
+        if subprocess.Popen(
+            ["git", "status"],
+            cwd=path,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False
+        ).communicate()[1].startswith('fatal'):
+            return False
+        else:
+            return True
 
-def add_and_commit(path, file, fullname, email, message):
-    if is_git_repo(path):
-        add = subprocess.Popen(
+    def add_and_commit(self, path, file, fullname, email, message):
+        if self.is_git_repo(path):
+            add = subprocess.Popen(
+                ["git", "add", file],
+                cwd=path,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                shell=False
+            ).communicate()
+            if add:
+                subprocess.Popen(
+                    ["git", "commit", "-m", message],
+                    cwd=path,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    shell=False
+                ).communicate()
+                return True
+
+    def init(self, path):
+        try:
+            os.mkdir(path)
+        except:
+            return 'Something wrong with the path'
+
+        subprocess.Popen(
+            ["git", "init"],
+            cwd=path,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False
+        ).communicate()
+
+    def commit(self, path, fullname, email, message):
+        try:
+            os.mkdir(path)
+        except:
+            pass
+
+        subprocess.Popen(
+            ["git", "commit", "-m", message],
+            cwd=path,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False
+        ).communicate()
+
+    def add(self, path, file):
+        try:
+            os.mkdir(path)
+        except:
+            pass
+
+        subprocess.Popen(
             ["git", "add", file],
             cwd=path,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=False
         ).communicate()
-        if add:
-            subprocess.Popen(
-                ["git", "commit", "-m", message],
-                cwd=path,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                shell=False
-            ).communicate()
-            return True
 
+    def get_head_hash(self, path):
+        try:
+            os.mkdir(path)
+        except:
+            pass
 
-def init(path):
-    try:
-        os.mkdir(path)
-    except:
-        return 'Something wrong with the path'
-
-    subprocess.Popen(
-        ["git", "init"],
-        cwd=path,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=False
-    ).communicate()
-
-
-def commit(path, fullname, email, message):
-    try:
-        os.mkdir(path)
-    except:
-        pass
-
-    subprocess.Popen(
-        ["git", "commit", "-m", message],
-        cwd=path,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=False
-    ).communicate()
-
-
-def add(path, file):
-    try:
-        os.mkdir(path)
-    except:
-        pass
-
-    subprocess.Popen(
-        ["git", "add", file],
-        cwd=path,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=False
-    ).communicate()
-
-
-def get_head_hash(path):
-    try:
-        os.mkdir(path)
-    except:
-        pass
-
-    return subprocess.Popen(
-        ["git", "rev-parse", "HEAD"],
-        cwd=path,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=False
-    ).communicate()
-
-
-def get_file_recent_hash(path, filename):
-    try:
-        os.mkdir(path)
-    except:
-        pass
-    file_and_hash = {}
-    file = subprocess.Popen(
-        ["git", "ls-files", "-s", filename],
-        cwd=path,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=False
-    ).communicate()
-    position = file[0].find(filename)
-    hash = file[0][:position].strip()
-    file = file[0][position:].strip()
-    file_and_hash[file] = hash
-    return file_and_hash
-
-
-def clone(path, url, wd=""):
-    subprocess.Popen(
-        ["git", "clone", url, wd],
-        cwd=path,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=False
-    ).communicate()
-
-
-def get_status(path):
-    try:
-        os.mkdir(path)
-    except:
-        pass
-    subprocess.Popen(
-        ["git", "status"],
-        cwd=path,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=False
-    ).communicate()
-
-
-def get_history(path, filename):
-    try:
-        os.mkdir(path)
-    except:
-        pass
-    Git_Commit_Fields = [
-        'Commit Hash',
-        'Tree Hash',
-        'Parent hashes',
-        'Author name',
-        'Author email',
-        'Author date',
-        'Author date, relative',
-        'Committer name',
-        'Commited Email',
-        'Commiter date',
-        'Commiter date relative',
-        'Subject'
-    ]
-    Git_Log_Format = [
-        '%H', '%T', '%P', '%an', '%ae', '%ad',
-        '%ar', '%cn', '%ce', '%cd', '%cr', '%s']
-
-    Git_Log_Format = '%x1f'.join(Git_Log_Format) + '%x1e'
-
-    p = subprocess.Popen(
-        ['git', 'log', '--format="%s"' % Git_Log_Format, '--',  filename],
-        cwd=path,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=False,
-    )
-    (log, _) = p.communicate()
-
-    log = log.strip('\n\x1e').split("\x1e")
-    log = [row.strip().split("\x1f") for row in log]
-    log = [dict(zip(Git_Commit_Fields, row)) for row in log if row]
-    return log
-
-
-def get_diff(path, hash, filename):
-    try:
-        os.mkdir(path)
-    except:
-        pass
-    return subprocess.Popen(
-        ["git", "diff", hash, '--', filename],
-        cwd=path,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=False
-    ).communicate()
-
-
-def reset(path, hash, filename):
-    try:
-        os.mkdir(path)
-    except:
-        pass
-    subprocess.Popen(
-        ["git", "reset", hash, '--', filename],
-        cwd=path,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=False
-    ).communicate()
-
-
-def get_and_copy(path, filename, new_path):
-    if is_git_repo(path):
-        moved = subprocess.Popen(
-            ["git", "mv", filename, new_path],
+        return subprocess.Popen(
+            ["git", "rev-parse", "HEAD"],
             cwd=path,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=False
         ).communicate()
-        if moved[1].startswith('fatal:'):
-            raise Exception('Must be a git repo')
 
+    def get_file_recent_hash(self, path, filename):
+        try:
+            os.mkdir(path)
+        except:
+            pass
+        file_and_hash = {}
+        file = subprocess.Popen(
+            ["git", "ls-files", "-s", filename],
+            cwd=path,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False
+        ).communicate()
+        position = file[0].find(filename)
+        hash = file[0][:position].strip()
+        file = file[0][position:].strip()
+        file_and_hash[file] = hash
+        return file_and_hash
 
-def get_file_version(repo_path, hash, filename, new_path=None):
-    if is_git_repo(repo_path):
-        if new_path:
-            with open(new_path, 'w') as f:
-                p = subprocess.Popen(
-                    ["git", "show", hash + ':' + filename],
-                    cwd=repo_path,
-                    stdout=f,
-                    stderr=subprocess.PIPE,
-                    shell=False
-                ).communicate()
-                if p[1].startswith('fatal'):
-                    return False
-                #TODO don't write a new file if it's false
-            return True
-        else:
-            p = subprocess.Popen(
-                ["git", "show", hash + ':' + filename],
-                cwd=repo_path,
+    def clone(self, path, url, wd=""):
+        subprocess.Popen(
+            ["git", "clone", url, wd],
+            cwd=path,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False
+        ).communicate()
+
+    def get_status(self, path):
+        try:
+            os.mkdir(path)
+        except:
+            pass
+        subprocess.Popen(
+            ["git", "status"],
+            cwd=path,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False
+        ).communicate()
+
+    def get_history(self, path, filename):
+        try:
+            os.mkdir(path)
+        except:
+            pass
+        Git_Commit_Fields = [
+            'Commit Hash',
+            'Tree Hash',
+            'Parent hashes',
+            'Author name',
+            'Author email',
+            'Author date',
+            'Author date, relative',
+            'Committer name',
+            'Commited Email',
+            'Commiter date',
+            'Commiter date relative',
+            'Subject'
+        ]
+        Git_Log_Format = [
+            '%H', '%T', '%P', '%an', '%ae', '%ad',
+            '%ar', '%cn', '%ce', '%cd', '%cr', '%s']
+
+        Git_Log_Format = '%x1f'.join(Git_Log_Format) + '%x1e'
+
+        p = subprocess.Popen(
+            ['git', 'log', '--format="%s"' % Git_Log_Format, '--',  filename],
+            cwd=path,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False,
+        )
+        (log, _) = p.communicate()
+
+        log = log.strip('\n\x1e').split("\x1e")
+        log = [row.strip().split("\x1f") for row in log]
+        log = [dict(zip(Git_Commit_Fields, row)) for row in log if row]
+        return log
+
+    def get_diff(self, path, hash, filename):
+        try:
+            os.mkdir(path)
+        except:
+            pass
+        return subprocess.Popen(
+            ["git", "diff", hash, '--', filename],
+            cwd=path,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False
+        ).communicate()
+
+    def reset(self, path, hash, filename):
+        try:
+            os.mkdir(path)
+        except:
+            pass
+        subprocess.Popen(
+            ["git", "reset", hash, '--', filename],
+            cwd=path,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False
+        ).communicate()
+
+    def get_and_copy(self, path, filename, new_path):
+        if self.is_git_repo(path):
+            moved = subprocess.Popen(
+                ["git", "mv", filename, new_path],
+                cwd=path,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 shell=False
             ).communicate()
-            return p[0]
+            if moved[1].startswith('fatal:'):
+                raise Exception('Must be a git repo')
+
+    def get_file_version(self, repo_path, hash, filename, new_path=None):
+        if self.is_git_repo(repo_path):
+            if new_path:
+                with open(new_path, 'w') as f:
+                    p = subprocess.Popen(
+                        ["git", "show", hash + ':' + filename],
+                        cwd=repo_path,
+                        stdout=f,
+                        stderr=subprocess.PIPE,
+                        shell=False
+                    ).communicate()
+                    if p[1].startswith('fatal'):
+                        return False
+                    #TODO don't write a new file if it's false
+                return True
+            else:
+                p = subprocess.Popen(
+                    ["git", "show", hash + ':' + filename],
+                    cwd=repo_path,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    shell=False
+                ).communicate()
+                return p[0]
 
 
 
