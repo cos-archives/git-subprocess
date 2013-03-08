@@ -10,10 +10,13 @@ import subprocess
 class Repository(object):
     '''Represents a git repository.'''
 
-    def is_git_repo(self, path):
+    def __init__(self, path):
+        self.path = path
+
+    def is_git_repo(self):
         if subprocess.Popen(
             ["git", "status"],
-            cwd=path,
+            cwd=self.path,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=False
