@@ -3,6 +3,10 @@ __author__ = 'samportnow'
 import os
 import subprocess
 
+from gitsubprocess.exceptions import (
+    FileNotFound, GitInitException,
+    InvalidRepository, NothingToCommit)
+
 # rather than make dir, we want to test if the path is a git repo
 # add and commit function
 
@@ -13,17 +17,52 @@ class Repository(object):
     def __init__(self, path):
         self.path = path
 
-    def is_git_repo(self):
-        if subprocess.Popen(
-            ["git", "status"],
+    def _execute(self, *args):
+        response = subprocess.Popen(
+            ["git", ] + list(args),
             cwd=self.path,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             shell=False
-        ).communicate()[1].startswith('fatal'):
+        ).communicate()
+        return { 'output': response[0], 'error': response[1] }
+
+    def is_git_repo(self):
+        if self._execute('status')['error'].startswith('fatal'):
             return False
         else:
             return True
+
+    def create(self):
+        if os.path.exists(self.path):
+            raise GitInitException('The path exists: %s' % self.path)
+        else:
+            os.mkdir(self.path)
+            self.init()
+            return True
+
+    def init(self):
+        self._execute('init')
+        return True
+
+    def add(self, filename):
+        if not self.is_git_repo():
+            raise InvalidRepository
+        response = self._execute('add', filename)
+        # TODO: I don't like this method of testing if it failed; it relies on
+        # the output of git remaining constant, and the output being in English
+        if 'did not match' in response['error']:
+            raise FileNotFound
+        return True
+
+    def commit(self, message):
+        response = self._execute('commit', '-m', message)
+        if 'nothing to commit' in response['output']:
+            raise NothingToCommit
+        return True
+
+    # Refactored above this line - LyndsySimon, 2013-03-08
+
 
     def add_and_commit(self, path, file, fullname, email, message):
         if self.is_git_repo(path):
@@ -43,48 +82,6 @@ class Repository(object):
                     shell=False
                 ).communicate()
                 return True
-
-    def init(self, path):
-        try:
-            os.mkdir(path)
-        except:
-            return 'Something wrong with the path'
-
-        subprocess.Popen(
-            ["git", "init"],
-            cwd=path,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            shell=False
-        ).communicate()
-
-    def commit(self, path, fullname, email, message):
-        try:
-            os.mkdir(path)
-        except:
-            pass
-
-        subprocess.Popen(
-            ["git", "commit", "-m", message],
-            cwd=path,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            shell=False
-        ).communicate()
-
-    def add(self, path, file):
-        try:
-            os.mkdir(path)
-        except:
-            pass
-
-        subprocess.Popen(
-            ["git", "add", file],
-            cwd=path,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            shell=False
-        ).communicate()
 
     def get_head_hash(self, path):
         try:
