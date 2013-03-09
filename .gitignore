@@ -1,3 +1,9 @@
+# Virtualenv
+env/*
+
+# Mac OSX
+.DS_Store
+
 *.py[cod]
 
 # C extensions

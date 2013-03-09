@@ -1,4 +1,5 @@
 from distutils.core import setup
+import setuptools
 
 setup(
     name='Git',
@@ -10,8 +11,8 @@ setup(
     url='',
     license='LICENSE.txt',
     description='git commands with python',
-    long_description=open('README.txt').read(),
+    long_description=open('README.md').read(),
     install_requires=[
-    
+
     ],
 )
