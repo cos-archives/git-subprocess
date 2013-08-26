@@ -24,6 +24,25 @@ class File(object):
         return self.path
     __unicode__ = __str__
 
+    _log_format = '--format="%H|%aD|%aN|<%ae>|%s"'
+
+    def get_version_by_sha(self, sha):
+        info = subprocess.check_output(
+            (
+                'git',
+                'log',
+                '--follow',
+                self._log_format,
+                '-n 1',
+                sha,
+                '--',
+                self.path,
+            ),
+            cwd=self.repo.path
+        )[1:-2]
+
+        return self._get_version_from_log(info)
+
     def _get_versions(self, path):
         try:
             with open(os.devnull) as f:
@@ -35,11 +54,12 @@ class File(object):
                             'git',
                              'log',
                              '--follow',
-                             '--format="%H|%aD|%aN|<%ae>|%s"',
+                             self._log_format,
                              '--',
                              path
                         ),
-                        stderr=f
+                        stderr=f,
+                        cwd=self.repo.path,
                     ).strip().split('\n')[::-1]
                 ]
         except subprocess.CalledProcessError:
@@ -50,18 +70,21 @@ class File(object):
         parsed_commits = []
 
         for line in raw_commits:
-            pcs = line.split('|')
-            parsed_commits.append(FileVersion(
-                repo=self.repo,
-                path=self.path,
-                sha=pcs[0],
-                date=pcs[1],
-                author_name=pcs[2],
-                author_email=pcs[3],
-                message='|'.join(pcs[4:]),
-            ))
+            parsed_commits.append(self._get_version_from_log(line))
 
         return parsed_commits
+
+    def _get_version_from_log(self, log):
+        pcs = log.split('|')
+        return FileVersion(
+            repo=self.repo,
+            path=self.path,
+            sha=pcs[0],
+            date=pcs[1],
+            author_name=pcs[2],
+            author_email=pcs[3],
+            message='|'.join(pcs[4:]),
+        )
 
 
 class FileVersion(object):
@@ -70,7 +93,7 @@ class FileVersion(object):
         self.path = path
         self.sha = sha
         self.date = date
-        self.message = message
+        self.message = message.strip('" ')
         self.author_name = author_name
         self.author_email = author_email
 

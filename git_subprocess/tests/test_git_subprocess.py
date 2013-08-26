@@ -27,9 +27,6 @@ class GitSubprocessTestCase(unittest.TestCase):
             TEST_REPO,
         )
 
-        # make sure that path exists
-        os.mkdir(self.path)
-
         # instantiate the repo's Repository object
         self.repo = Repository(self.path)
 
@@ -239,21 +236,6 @@ class GitSubprocessTestCase(unittest.TestCase):
         except subprocess.CalledProcessError:
             return []
 
-    def test_get_file_contents(self):
-        file_content = 'Center for Open Science'
-        with open(FILE_NAME, 'w') as f:
-            f.write(file_content)
-        self.repo.add_file(FILE_NAME, AUTHOR_STRING, COMMIT_MESSAGE)
-
-        sha = subprocess.check_output(
-            ('git', 'log', '--format="%H"', '--', 'foo.txt')
-        ).strip('"\n')
-
-        self.assertEqual(
-            self.repo._get_file_content(path=FILE_NAME),
-            file_content
-        )
-
     def test_get_file_invalid_path(self):
         with self.assertRaises(ValueError):
             self.repo.get_file('not_a_real_file.txt')
@@ -302,6 +284,17 @@ class GitSubprocessTestCase(unittest.TestCase):
             FILE_NAME
         )
 
+    def test_get_file_commit_message(self):
+        file_content = 'Center for Open Science'
+        with open(FILE_NAME, 'w') as f:
+            f.write(file_content)
+        self.repo.add_file(FILE_NAME, AUTHOR_STRING, COMMIT_MESSAGE)
+
+        self.assertEqual(
+            self.repo.get_file(FILE_NAME).message,
+            COMMIT_MESSAGE
+        )
+
     def test_get_file_version(self):
         file_content = 'Center for Open Science'
         with open(FILE_NAME, 'w') as f:
@@ -323,3 +316,18 @@ class GitSubprocessTestCase(unittest.TestCase):
             str(self.repo.get_file(FILE_NAME).versions[0]),
             '^(\w){40} -- foo\.txt$'
         )
+
+    def test_get_file_version_by_sha(self):
+        content_versions = ('0', '1', '2', '3', '4')
+        for text in content_versions:
+            with open(FILE_NAME, 'w') as f:
+                f.write(text)
+            self.repo.add_file(FILE_NAME, AUTHOR_STRING, COMMIT_MESSAGE)
+
+        shas = self._get_shas(FILE_NAME)
+
+        for i, text in enumerate(content_versions):
+            self.assertEqual(
+                self.repo.get_file(path=FILE_NAME).get_version_by_sha(shas[i]).content,
+                str(i)
+            )
