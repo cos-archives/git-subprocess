@@ -161,17 +161,18 @@ class GitSubprocessTestCase(unittest.TestCase):
         )
 
     def test_clone_repo(self):
-        subprocess.call(('touch', FILE_NAME))
+        subprocess.call(
+            ('touch', FILE_NAME),
+            cwd=self.path,
+        )
         self.repo._stage_file(FILE_NAME)
         self.repo.commit(AUTHOR_STRING, COMMIT_MESSAGE)
 
         self.cloned_repo.clone_from(self.path)
 
-        os.chdir(self.cloned_repo.path)
-
         self.assertNotEqual(
-            os.getcwd(),  # new repo
-            os.path.abspath(self.path)  # old repo
+            os.path.abspath(self.cloned_repo.path),  # new repo
+            os.path.abspath(self.repo.path)  # old repo
         )
 
         self.assertIn(

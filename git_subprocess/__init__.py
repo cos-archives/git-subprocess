@@ -14,29 +14,37 @@ class Repository(object):
     path = None
 
     def __init__(self, path):
-        self.path = path
+        self.path = os.path.abspath(path)
 
     def clone_from(self, source_path):
         """ Clone the repository to the destination path """
-        # Will raise an exception if unsuccessful
+
+        # create the new path
+        if not os.path.exists(self.path):
+            os.mkdir(self.path)
+
+        # clone
         utils.silence(
             subprocess.check_call,
-            ('git', 'clone', source_path, self.path)
+            (
+                'git',
+                'clone',
+                os.path.abspath(source_path),
+                os.path.abspath(self.path),
+            ),
+            cwd=self.path,
         )
         return True
 
     def init(self):
         """ Creates a new git repository. """
-        self._chdir()
-        utils.silence(
-            subprocess.call,
-            ('git', 'init')
-        )
-
-    def _chdir(self):
         if not os.path.exists(self.path):
             os.mkdir(self.path)
-        os.chdir(self.path)
+        utils.silence(
+            subprocess.call,
+            ('git', 'init'),
+            cwd=self.path,
+        )
 
     # Manage pending commit
     #######################
@@ -67,17 +75,30 @@ class Repository(object):
 
     def _unstage_file(self, file_path):
         """ Removes a file from the pending commit """
-        utils.silence(subprocess.call, ('git', 'rm', '--cached', file_path))
+        utils.silence(
+            subprocess.call,
+            ('git', 'rm', '--cached', file_path),
+            cwd=self.path,
+        )
 
     def _stage_file(self, file_path):
-        utils.silence(subprocess.call, ('git', 'add', file_path))
+        utils.silence(
+            subprocess.call,
+            ('git', 'add', file_path),
+            cwd=self.path,
+        )
 
     def _rm_file(self, file_path):
-        utils.silence(subprocess.call, ('git', 'rm', file_path))
+        utils.silence(
+            subprocess.call,
+            ('git', 'rm', file_path),
+            cwd=self.path,
+        )
 
     def _mv_file(self, old_path, new_path):
         subprocess.call(
-            ('git', 'mv', os.path.abspath(old_path), os.path.abspath(new_path))
+            ('git', 'mv', os.path.abspath(old_path), os.path.abspath(new_path)),
+            cwd=self.path,
         )
 
     @property
@@ -104,7 +125,8 @@ class Repository(object):
         return tuple(
             FileStatus(x[3:],x[1], x[0])
             for x in subprocess.check_output(
-                ('git', 'status', '--porcelain')
+                ('git', 'status', '--porcelain'),
+                cwd=self.path,
             ).strip().split('\n')
         )
 
@@ -119,30 +141,23 @@ class Repository(object):
                 '--author="{}"'.format(author),
                 '-m "{}"'.format(message)
             ),
+            cwd=self.path,
         )
 
     def _get_file_content(self, path, sha=None):
         # TODO: What happens if the file isn't present in HEAD?
         # g show HEAD~1:foo.txt
-        return subprocess.check_output((
-            'git',
-            'show',
-            '{ref}:{path}'.format(
-                ref=sha or 'HEAD',
-                path=path
-            )
-        ))
+        return subprocess.check_output(
+            (
+                'git',
+                'show',
+                '{ref}:{path}'.format(
+                    ref=sha or 'HEAD',
+                    path=path
+                )
+            ),
+            cwd=self.path,
+        )
 
     def get_file(self, path):
         return File(self, path)
-
-
-
-
-
-
-
-#
-# my_repo = Repo('/path/to/repo')
-# my_repo.add_file('/apath/to/file/')
-# my_repo.commit()
