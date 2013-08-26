@@ -4,13 +4,13 @@ import setuptools
 setup(
     name='Git',
     version='0.1.0',
-    author='Sam Portnow',
-    author_email='samson91787@gmail.com',
+    author='Center for Open Science',
+    author_email='dev@centerforopenscience.org',
     packages=['gitsubprocess'],
     scripts=[],
     url='',
     license='LICENSE.txt',
-    description='git commands with python',
+    description='Git API, via subprocess',
     long_description=open('README.md').read(),
     install_requires=[
 
