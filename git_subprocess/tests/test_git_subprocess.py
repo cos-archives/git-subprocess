@@ -22,22 +22,22 @@ class GitSubprocessTestCase(unittest.TestCase):
         self.base_path = tempfile.mkdtemp()
 
         # path of the primary repo
-        self.repo_path = os.path.join(
+        self.path = os.path.join(
             self.base_path,
             TEST_REPO,
         )
 
         # make sure that path exists
-        os.mkdir(self.repo_path)
+        os.mkdir(self.path)
 
         # instantiate the repo's Repository object
-        self.repo = Repository(self.repo_path)
+        self.repo = Repository(self.path)
 
         # initialize the repo
         self.repo.init()
 
         # change directory to the repo's root
-        os.chdir(self.repo_path)
+        os.chdir(self.path)
 
     @property
     def cloned_repo(self):
@@ -165,13 +165,13 @@ class GitSubprocessTestCase(unittest.TestCase):
         self.repo._stage_file(FILE_NAME)
         self.repo.commit(AUTHOR_STRING, COMMIT_MESSAGE)
 
-        self.cloned_repo.clone_from(self.repo_path)
+        self.cloned_repo.clone_from(self.path)
 
-        os.chdir(self.cloned_repo.repo_path)
+        os.chdir(self.cloned_repo.path)
 
         self.assertNotEqual(
             os.getcwd(),  # new repo
-            os.path.abspath(self.repo_path)  # old repo
+            os.path.abspath(self.path)  # old repo
         )
 
         self.assertIn(

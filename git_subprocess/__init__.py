@@ -11,17 +11,17 @@ __version__ = '0.0.0'
 
 class Repository(object):
 
-    repo_path = None
+    path = None
 
     def __init__(self, path):
-        self.repo_path = path
+        self.path = path
 
     def clone_from(self, source_path):
         """ Clone the repository to the destination path """
         # Will raise an exception if unsuccessful
         utils.silence(
             subprocess.check_call,
-            ('git', 'clone', source_path, self.repo_path)
+            ('git', 'clone', source_path, self.path)
         )
         return True
 
@@ -34,9 +34,9 @@ class Repository(object):
         )
 
     def _chdir(self):
-        if not os.path.exists(self.repo_path):
-            os.mkdir(self.repo_path)
-        os.chdir(self.repo_path)
+        if not os.path.exists(self.path):
+            os.mkdir(self.path)
+        os.chdir(self.path)
 
     # Manage pending commit
     #######################
