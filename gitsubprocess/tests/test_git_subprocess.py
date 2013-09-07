@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 import unittest
 
-from git_subprocess import Repository, utils
+from gitsubprocess import Repository, utils
 
 AUTHOR_STRING = 'Test User <test@user.com>'
 COMMIT_MESSAGE = 'Sample Commit Message'
