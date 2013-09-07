@@ -46,6 +46,13 @@ class Repository(object):
             cwd=self.path,
         )
 
+    @property
+    def is_valid_repo(self):
+        return (
+            os.path.exists(self.path)
+            and os.path.exists(os.path.join(self.path, '.git'))
+        )
+
     # Manage pending commit
     #######################
 
